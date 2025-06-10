@@ -161,7 +161,16 @@ This model framework can be applied to study:
 - **Vaccination strategy optimization** in spatially structured populations
 
 ## References
+[1] R. Fujie and T. Odagaki. Effects of superspreaders in spread of epidemic. Physica
+A: Statistical Mechanics and its Applications, 374(2):843–852, 2007. ISSN 0378-4371. doi:
+https://doi.org/10.1016/j.physa.2006.08.050. URL https://www.sciencedirect.com/science/article/pii/S0378437106008703.
 
+[2] M. Lipsitch, T. Cohen, B. Cooper, J. M. Robins, S. Ma, L. James, G. Gopalakrishna, S. K.
+Chew, C. C. Tan, M. H. Samore, D. Fisman, and M. Murray. Transmission dynamics and
+control of severe acute respiratory syndrome. Science, 300(5627):1966–1970, 2003. doi:
+10.1126/science.1086616. URL https://www.science.org/doi/abs/10.1126/science.1086616.
+
+[3] World Health Organization. Severe acute respiratory syndrome (sars). https://www.who.int/health-topics/severe-acute-respiratory-syndrome, 2003.
 
 ## **License** 
 This project is licensed under the [MIT License](LICENSE).
