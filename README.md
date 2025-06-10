@@ -151,13 +151,6 @@ w(r) = w₀ × (1 - r/rs)²  for r ≤ rs (superspreader)
 w(r) = 0                 for r > respective cutoff
 ```
 
-### Critical Density Theory
-The critical density ρc follows:
-```
-ρc = Rc × w₀ / [λ × I_ss + (1-λ) × I_n]
-```
-where I_ss and I_n are transmission integrals for superspreaders and normal individuals.
-
 ## Applications
 
 This model framework can be applied to study:
