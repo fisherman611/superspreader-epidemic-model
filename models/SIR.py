@@ -79,7 +79,7 @@ class SIRSimulation:
                     return 0
                 return self.w0 * (1 - r/self.r0)**2
     
-    def run_simulation(self, N, lambda_val, model_type='strong_infectiousness', max_steps=100, initial_pos=(5, 0)):
+    def run_simulation(self, N, lambda_val, model_type='strong_infectiousness', max_steps=100, initial_pos=(0, 0)):
         """Run a single epidemic simulation
         
         Args: 
