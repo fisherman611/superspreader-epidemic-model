@@ -60,13 +60,13 @@ def plot_percolation_probability():
     sim = SIRSimulation()
     L = sim.L
     lambda_values = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
-    N_values = range(150, 901, 50)
+    N_values = range(150, 901, 10)
     n_runs = 1000
     
     colors = ['red', 'green', 'blue', 'magenta', 'cyan', 'yellow']
     markers = ['o', 'o', 's', 's', '^', '^']
     
-    for model_idx, model_type in enumerate(['strong', 'hub']):
+    for model_idx, model_type in enumerate(['strong_infectiousness', 'hub']):
         plt.figure(figsize=(10, 8))
         
         for lambda_idx, lambda_val in enumerate(lambda_values):
@@ -92,7 +92,7 @@ def plot_percolation_probability():
         
         plt.xlabel(r'$\rho \pi r_0^2$')
         plt.ylabel('Percolation Probability')
-        plt.title(f'{"Strong Infectiousness" if model_type == "strong" else "Hub"} Model')
+        plt.title(f'{"Strong Infectiousness" if model_type == "strong_infectiousness" else "Hub"} Model')
         plt.legend()
         plt.grid(True, alpha=0.3)
         plt.xlim(0, 30)
@@ -105,7 +105,7 @@ def plot_critical_density():
     """Plot the Critical density"""
     sim = SIRSimulation()
     lambda_values = np.linspace(0, 1, 100)
-    N_values = np.arange(150, 901, 50)
+    N_values = np.arange(150, 901, 10)
     n_runs = 1000
     
     
@@ -115,27 +115,27 @@ def plot_critical_density():
     w0 = sim.w0
     
     # Strong model integrals
-    I_n_strong = 2 * np.pi * w0 * (r0**2) / 6
-    I_ss_strong = 2 * np.pi * w0 * (r0**2) / 2
+    I_n_strong = np.pi * w0 * (r0**2) / 6
+    I_ss_strong = np.pi * w0 * (r0**2) / 2
     R_c_strong = 4.5
-    strong_critical = R_c_strong * w0 / (lambda_values * I_ss_strong + (1 - lambda_values) * I_n_strong)
+    strong_critical = R_c_strong * w0 * np.pi * (r0**2) / (lambda_values * I_ss_strong + (1 - lambda_values) * I_n_strong)
 
     # Hub model integrals
     I_n_hub = I_n_strong
-    I_ss_hub = 2 * np.pi * w0 * (rs**2) / 6
+    I_ss_hub = np.pi * w0 * (rs**2) / 6
     R_c_hub = 3.2
-    hub_critical = R_c_hub * w0 / (lambda_values * I_ss_hub + (1 - lambda_values) * I_n_hub)
+    hub_critical = R_c_hub * w0 * np.pi * (r0**2) / (lambda_values * I_ss_hub + (1 - lambda_values) * I_n_hub)
     
     # Simulation points
     lambda_sim = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
     strong_sim = []
     hub_sim = []
 
-    for model_type, sim_points in [('strong', strong_sim), ('hub', hub_sim)]:
+    for model_type, sim_points in [('strong_infectiousness', strong_sim), ('hub', hub_sim)]:
         for lambda_val in tqdm(lambda_sim, desc=f'Critical density {model_type}'):
             percolation_probs = []
             rho_values = []
-            for N in N_values:
+            for N in tqdm(N_values):
                 percolated_count = 0
                 for _ in range(n_runs):
                     result = sim.run_simulation(N, lambda_val, model_type)
@@ -173,13 +173,13 @@ def plot_critical_density():
 def plot_distance_evolution():
     """Plot the distance evolution"""
     sim = SIRSimulation()
-    lambda_values = [0.0, 0.2, 0.4, 0.8, 1.0]
+    lambda_values = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
     N = 500
     n_runs = 1000
     max_steps = 100
     
-    colors = ['red', 'green', 'purple', 'blue', 'yellow']
-    markers = ['o', 's', 's', 's', '^']
+    colors = ['red', 'green', 'purple', 'blue', 'yellow', 'pink']
+    markers = ['o', 's', 's', 's', '^', '^']
     
     plt.figure(figsize=(10, 8))
     
@@ -187,7 +187,7 @@ def plot_distance_evolution():
         all_distances = []
         
         for _ in tqdm(range(n_runs), desc=f'λ={lambda_val}'):
-            result = sim.run_simulation(N, lambda_val, 'strong', max_steps)
+            result = sim.run_simulation(N, lambda_val, 'strong_infectiousness', max_steps)
             distances = result['max_distances']
             # Pad with last value if simulation ended early
             while len(distances) < max_steps:
@@ -228,7 +228,7 @@ def plot_propagation_velocity():
         # Strong model
         strong_vels = []
         for _ in range(n_runs):
-            result = sim.run_simulation(N, lambda_val, 'strong', max_steps)
+            result = sim.run_simulation(N, lambda_val, 'strong_infectiousness', max_steps)
             distances = result['max_distances']
             if len(distances) > 10:
                 # Calculate velocity as slope of first 10 steps
@@ -276,7 +276,7 @@ def plot_epidemic_curves():
     
     for _ in tqdm(range(n_runs), desc='Epidemic curves'):
         # Strong model, λ=0.2
-        result = sim.run_simulation(N, 0.2, 'strong', max_steps)
+        result = sim.run_simulation(N, 0.2, 'strong_infectiousness', max_steps)
         infections = result['new_infections_per_step']
         while len(infections) < max_steps:
             infections.append(0)
@@ -290,7 +290,7 @@ def plot_epidemic_curves():
         hub_02_infections.append(infections)
         
         # No superspreaders, λ=0.0
-        result = sim.run_simulation(N, 0.0, 'strong', max_steps)
+        result = sim.run_simulation(N, 0.0, 'strong_infectiousness', max_steps)
         infections = result['new_infections_per_step']
         while len(infections) < max_steps:
             infections.append(0)
@@ -326,7 +326,7 @@ def plot_infection_networks():
     max_steps = 100
     
     # Figure 9: Strong Model, λ=0.2
-    result = sim.run_simulation(N, 0.2, 'strong', max_steps)
+    result = sim.run_simulation(N, 0.2, 'strong_infectiousness', max_steps)
     plot_network(result, 'Strong Model (λ=0.2)', 'fig9_strong_network.png')
     
     # Figure 10: Hub Model, λ=0.2
@@ -334,7 +334,7 @@ def plot_infection_networks():
     plot_network(result, 'Hub Model (λ=0.2)', 'fig10_hub_network.png')
     
     # Figure 11: No superspreaders, λ=0.0
-    result = sim.run_simulation(N, 0.0, 'strong', max_steps)
+    result = sim.run_simulation(N, 0.0, 'strong_infectiousness', max_steps)
     plot_network(result, 'No Superspreaders (λ=0.0)', 'fig11_no_superspreaders_network.png')
 
 def plot_network(result, title, filename):
@@ -385,7 +385,7 @@ def plot_secondary_infections():
     # Figure 12: λ=0.0
     all_secondary_no_super = []
     for _ in tqdm(range(n_runs), desc='Secondary infections λ=0.0'):
-        result = sim.run_simulation(N, 0.0, 'strong', max_steps)
+        result = sim.run_simulation(N, 0.0, 'strong_infectiousness', max_steps)
         secondary = list(result['secondary_infections'].values())
         all_secondary_no_super.extend(secondary)
     
@@ -408,7 +408,7 @@ def plot_secondary_infections():
     
     for _ in tqdm(range(n_runs), desc='Secondary infections λ=0.2'):
         # Strong model
-        result = sim.run_simulation(N, 0.2, 'strong', max_steps)
+        result = sim.run_simulation(N, 0.2, 'strong_infectiousness', max_steps)
         secondary = list(result['secondary_infections'].values())
         all_secondary_strong.extend(secondary)
         
@@ -508,7 +508,7 @@ def plot_sars_comparison():
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.xlim(0, 150)
-    plt.ylim(0, 50)
+    plt.ylim(0, 80)
     plt.tight_layout()
     plt.savefig('figures/fig15_sars_epidemic_curves.png', dpi=300)
     plt.close()
@@ -518,11 +518,11 @@ def main():
     print("This may take several minutes due to Monte Carlo simulations.")
     
     # Generate all figures
-    print("\n1. Plotting infection probabilities...")
-    plot_infection_probabilities()
+    # print("\n1. Plotting infection probabilities...")
+    # plot_infection_probabilities()
     
-    print("\n2. Computing percolation probabilities...")
-    plot_percolation_probability()
+    # print("\n2. Computing percolation probabilities...")
+    # plot_percolation_probability()
     
     print("\n3. Plotting critical density...")
     plot_critical_density()
